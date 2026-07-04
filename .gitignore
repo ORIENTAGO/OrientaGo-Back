@@ -1,0 +1,42 @@
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+/bin/
+/lib/
+/share/
+/include/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment and Local Configs
+.env
+.env.*
+*.log
+
+# No deberia subir el modelo a git pero lo hice para que fuera mas facil de usar 
+#se lo puede descomentar para no subir el modelo a git
+# /models/*.onnx
