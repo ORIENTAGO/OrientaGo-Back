@@ -5,7 +5,10 @@ import numpy as np
 import onnxruntime as ort
 from typing import List
 from fastapi import HTTPException
-from app.config import MODEL_PATH, INPUT_SIZE, CONF_THRESHOLD, NMS_THRESHOLD, RELEVANT_CLASSES
+from app.config import (
+    MODEL_PATH, INPUT_SIZE, CONF_THRESHOLD, NMS_THRESHOLD,
+    RELEVANT_CLASSES, REFERENCE_HEIGHTS_M, DEFAULT_HEIGHT_M
+)
 from app.schemas.detection import Detection
 
 _session: ort.InferenceSession | None = None
@@ -37,15 +40,16 @@ def letterbox(image: np.ndarray, new_size: int = INPUT_SIZE):
     canvas[top : top + nh, left : left + nw] = resized
     return canvas, scale, left, top
 
-def estimate_distance_m(bbox_height_px: float, image_height_px: int) -> float:
+def estimate_distance_m(bbox_height_px: float, image_height_px: int, class_id: int) -> float:
     """
-    Estimación aproximada de distancia basada en el tamaño relativo
-    del bounding box en la imagen.
+    Estimación aproximada de distancia a partir del tamaño relativo del
+    objeto en la imagen y su altura real de referencia.
     """
     relative_height = float(bbox_height_px) / float(image_height_px)
     if relative_height <= 0:
         return 99.0
-    distancia = 1.65 / (relative_height * 1.4)
+    altura_real = REFERENCE_HEIGHTS_M.get(class_id, DEFAULT_HEIGHT_M)
+    distancia = altura_real / (relative_height * 1.4)
     return round(min(float(distancia), 20.0), 1)
 
 def run_inference(image: np.ndarray) -> List[Detection]:
@@ -91,7 +95,7 @@ def run_inference(image: np.ndarray) -> List[Detection]:
                 Detection(
                     label=RELEVANT_CLASSES[class_ids[i]],
                     confidence=round(float(scores[i]), 2),
-                    distancia_aprox_m=estimate_distance_m(h, img_h),
+                    distancia_aprox_m=estimate_distance_m(h, img_h, class_ids[i]),
                     bbox=[
                         round(float(x1) / img_w, 3),
                         round(float(y1) / img_h, 3),
