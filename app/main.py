@@ -4,7 +4,7 @@ from app.api.router import api_router
 
 app = FastAPI(title="Asistente Visual - Servidor de Detección (MVP)")
 
-# CORS abierto para pruebas en red local (WiFi del equipo)
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
