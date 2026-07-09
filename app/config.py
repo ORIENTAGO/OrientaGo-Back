@@ -78,3 +78,9 @@ REFERENCE_HEIGHTS_M = {
 }
 DEFAULT_HEIGHT_M = 1.0
 
+# --- Capa de análisis de trayectoria ---
+# Rango horizontal normalizado (0-1) que define el "carril" del peatón.
+# Si la bbox del objeto está completamente fuera de este rango, no se
+# considera en la trayectoria directa de colisión.
+TRAYECTORIA_X_MIN = 0.25
+TRAYECTORIA_X_MAX = 0.75
